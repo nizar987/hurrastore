@@ -98,10 +98,10 @@ export default function Home() {
     }
   };
 
-  const bestSellers = products.slice(0, 4);
-  const newArrivals = products.slice(4, 8);
-  const featuredProducts = products.slice(8, 12);
-  const trendingProducts = products.slice(0, 3);
+  const bestSellers = (products || []).slice(0, 4);
+  const newArrivals = (products || []).slice(4, 8);
+  const featuredProducts = (products || []).slice(8, 12);
+  const trendingProducts = (products || []).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -109,7 +109,6 @@ export default function Home() {
       <Navigation
         cartCount={cartCount}
         user={user}
-        categories={categories}
       />
 
       {/* Hero Section */}
@@ -198,7 +197,7 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categories.slice(0, 6).map((category, index) => {
+            {(categories || []).slice(0, 6).map((category, index) => {
               const colors = [
                 'from-blue-500 to-blue-600',
                 'from-pink-500 to-pink-600',
@@ -232,107 +231,152 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Best Sellers */}
-      <section className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative">
-        <div className="container-custom">
-          <div className="flex items-center justify-between mb-8 md:mb-12">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-600 rounded-full px-4 py-2 mb-4">
-                <TrendingUp className="h-4 w-4" />
-                <span className="text-sm font-medium">Top Rated</span>
+        {/* Best Sellers */}
+        <section className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-20 w-32 h-32 bg-orange-200/20 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-20 w-40 h-40 bg-blue-200/20 rounded-full blur-3xl animate-bounce"></div>
+          </div>
+          
+          <div className="container-custom relative z-10">
+            <div className="text-center mb-12 md:mb-16">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-600 rounded-full px-6 py-3 mb-6 shadow-lg">
+                <TrendingUp className="h-5 w-5" />
+                <span className="text-sm font-bold">Top Rated Products</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                 Best Sellers
               </h2>
-              <p className="text-xl text-gray-600">Our most popular products loved by customers</p>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                Discover our most popular products loved by thousands of customers worldwide
+              </p>
+              <Link href="/products">
+                <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-3 rounded-2xl font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                  View All Products
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
-            <Link href="/products">
-              <Button variant="outline" className="shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 font-semibold">
-                All Products
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {bestSellers.map((product, index) => (
+                <div 
+                  key={product.id} 
+                  className="animate-fade-in transform hover:-translate-y-3 transition-all duration-500"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-white/20 overflow-hidden group transition-all duration-300">
+                    <ProductCard
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onAddToWishlist={() => toast.success('Added to wishlist!')}
+                      className="bg-transparent shadow-none border-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* New Arrivals */}
+        <section className="py-16 md:py-20 bg-white relative overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0">
+            <div className="absolute top-10 right-10 w-28 h-28 bg-green-200/20 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute bottom-10 left-10 w-36 h-36 bg-emerald-200/20 rounded-full blur-3xl animate-bounce"></div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {bestSellers.map((product) => (
-              <div key={product.id} className="transform hover:-translate-y-2 transition-all duration-300">
-                <ProductCard
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onAddToWishlist={() => toast.success('Added to wishlist!')}
-                />
+          <div className="container-custom relative z-10">
+            <div className="text-center mb-12 md:mb-16">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-600 rounded-full px-6 py-3 mb-6 shadow-lg">
+                <Zap className="h-5 w-5" />
+                <span className="text-sm font-bold">Just Launched</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* New Arrivals */}
-      <section className="py-16 md:py-20 bg-white relative">
-        <div className="container-custom">
-          <div className="flex items-center justify-between mb-8 md:mb-12">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-green-100 text-green-600 rounded-full px-4 py-2 mb-4">
-                <Zap className="h-4 w-4" />
-                <span className="text-sm font-medium">Fresh Arrivals</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
                 New Arrivals
               </h2>
-              <p className="text-xl text-gray-600">Fresh products just added to our collection</p>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                Be the first to discover our latest collection of premium products
+              </p>
+              <Link href="/products">
+                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-3 rounded-2xl font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                  Explore Collection
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
-            <Link href="/products">
-              <Button variant="outline" className="shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 font-semibold">
-                All Products
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {newArrivals.map((product, index) => (
+                <div 
+                  key={product.id} 
+                  className="animate-fade-in transform hover:-translate-y-3 transition-all duration-500"
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl shadow-xl hover:shadow-2xl border border-green-100 overflow-hidden group transition-all duration-300">
+                    <ProductCard
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onAddToWishlist={() => toast.success('Added to wishlist!')}
+                      className="bg-transparent shadow-none border-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {newArrivals.map((product) => (
-              <div key={product.id} className="transform hover:-translate-y-2 transition-all duration-300">
-                <ProductCard
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onAddToWishlist={() => toast.success('Added to wishlist!')}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Products */}
-      <section className="py-16 md:py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 relative">
-        <div className="container-custom">
-          <div className="text-center mb-12 md:mb-16">
-            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-600 rounded-full px-4 py-2 mb-4">
-              <Star className="h-4 w-4" />
-              <span className="text-sm font-medium">Editor's Choice</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Featured Products
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Handpicked items you'll absolutely love
-            </p>
+        {/* Featured Products */}
+        <section className="py-16 md:py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 relative overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0">
+            <div className="absolute top-16 left-16 w-40 h-40 bg-purple-200/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-16 right-16 w-32 h-32 bg-pink-200/20 rounded-full blur-2xl animate-bounce"></div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <div key={product.id} className="transform hover:-translate-y-2 transition-all duration-300">
-                <ProductCard
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onAddToWishlist={() => toast.success('Added to wishlist!')}
-                />
+          <div className="container-custom relative z-10">
+            <div className="text-center mb-12 md:mb-16">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600 rounded-full px-6 py-3 mb-6 shadow-lg">
+                <Star className="h-5 w-5" />
+                <span className="text-sm font-bold">Editor's Choice</span>
               </div>
-            ))}
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Featured Products
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                Handpicked premium items curated by our experts just for you
+              </p>
+              <Link href="/products">
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 rounded-2xl font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                  Shop Featured Items
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {featuredProducts.map((product, index) => (
+                <div 
+                  key={product.id} 
+                  className="animate-fade-in transform hover:-translate-y-3 transition-all duration-500"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-purple-100 overflow-hidden group transition-all duration-300">
+                    <ProductCard
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onAddToWishlist={() => toast.success('Added to wishlist!')}
+                      className="bg-transparent shadow-none border-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* Trending Now */}
       <section className="py-16 md:py-20 bg-white relative">
@@ -545,7 +589,37 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* StickyCart component removed - will be added when cart functionality is implemented */}
+      {/* Custom Styles */}
+      <style jsx global>{`
+        .animate-fade-in {
+          opacity: 0;
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
+        }
+        
+        .container-custom {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 1rem;
+        }
+        
+        @media (min-width: 640px) {
+          .container-custom {
+            padding: 0 1.5rem;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .container-custom {
+            padding: 0 2rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

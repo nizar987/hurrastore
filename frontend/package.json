@@ -6,18 +6,23 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "firebase:emulators": "firebase emulators:start",
+    "firebase:setup": "node scripts/setup-firebase-emulators.js",
+    "firebase:deploy": "firebase deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
+    "firebase": "^12.2.1",
     "lucide-react": "^0.542.0",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "react-hot-toast": "^2.6.0",
+    "rxjs": "^7.8.2",
     "tailwind-merge": "^3.3.1",
     "yup": "^1.7.0"
   },

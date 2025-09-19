@@ -15,10 +15,19 @@
     "start:backend": "cd backend && npm run start",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
-  "keywords": ["ecommerce", "nextjs", "express", "typescript"],
+  "keywords": [
+    "ecommerce",
+    "nextjs",
+    "express",
+    "typescript"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "prisma": "^6.15.0"
+  },
+  "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated"
   }
 }

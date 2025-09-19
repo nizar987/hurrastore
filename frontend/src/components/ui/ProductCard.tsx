@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Button from './Button';
@@ -39,19 +40,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div className={cn(variants[variant], className)}>
       {/* Product Image */}
       <div className="relative overflow-hidden">
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            width={400}
-            height={300}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-            <span className="text-gray-500 text-lg">No Image</span>
-          </div>
-        )}
+        <Link href={`/products/${product.id}`}>
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              width={400}
+              height={300}
+              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+            />
+          ) : (
+            <div className="w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center cursor-pointer">
+              <span className="text-gray-500 text-lg">No Image</span>
+            </div>
+          )}
+        </Link>
         
         {/* Action Buttons */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -99,9 +102,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Details */}
       <div className="p-5">
-        <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors text-lg">
-          {product.name}
-        </h3>
+        <Link href={`/products/${product.id}`}>
+          <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors text-lg cursor-pointer">
+            {product.name}
+          </h3>
+        </Link>
         
         <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
           {product.description || 'No description available'}

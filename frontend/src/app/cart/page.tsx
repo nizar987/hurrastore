@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import { cartAPI, CartItem } from '@/lib/cart';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -15,10 +17,11 @@ import {
   Truck,
   Shield,
   Heart,
-  Star
+  Star,
+  Sparkles,
+  CheckCircle
 } from 'lucide-react';
-import Layout from '@/components/Layout';
-import Link from 'next/link';
+import Navigation from '@/components/ui/Navigation';
 
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -110,50 +113,62 @@ const CartPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Navigation cartCount={0} user={user} />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-10 border border-white/20 animate-pulse">
+            <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg w-48 mb-6"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-28 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl"></div>
+                ))}
+              </div>
+              <div className="h-64 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl"></div>
+            </div>
+          </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <Layout>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Navigation cartCount={0} user={user} />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <div className="mx-auto w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+            <div className="mx-auto w-32 h-32 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 shadow-xl border border-white/20">
               <ShoppingBag className="h-16 w-16 text-gray-400" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8 text-lg">Looks like you haven't added any items to your cart yet.</p>
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-3">Your cart is empty</h2>
+            <p className="text-gray-600 mb-10 text-lg">Looks like you haven't added any items to your cart yet.</p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 <ArrowLeft className="h-5 w-5" />
                 Continue Shopping
               </Link>
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-3 border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 hover:bg-gray-50 font-semibold transition-all duration-300"
               >
                 Back to Home
               </Link>
             </div>
             
             {/* Popular Categories */}
-            <div className="mt-12">
+            <div className="mt-14">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Popular Categories</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {['Electronics', 'Clothing', 'Home & Kitchen', 'Accessories'].map((category) => (
                   <Link
                     key={category}
                     href={`/products?category=${encodeURIComponent(category)}`}
-                    className="p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
+                    className="p-4 bg-white/80 backdrop-blur-md border border-white/20 rounded-xl hover:shadow-xl transition-all duration-300"
                   >
                     <span className="text-gray-900 font-medium">{category}</span>
                   </Link>
@@ -162,18 +177,25 @@ const CartPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <Navigation cartCount={cartItems.length} user={user} />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <div>
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 rounded-full px-4 py-2 mb-3">
+              <Sparkles className="h-4 w-4" />
+              <span className="text-sm font-medium">Great Choices</span>
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Shopping Cart</h1>
+          </div>
           <button
             onClick={clearCart}
-            className="text-red-600 hover:text-red-700 text-sm font-medium px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
+            className="text-red-600 hover:text-red-700 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-red-50 transition-all duration-300"
           >
             Clear Cart
           </button>
@@ -182,32 +204,34 @@ const CartPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-white/20">
+              <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-white/40">
+                <h2 className="text-lg font-bold text-gray-900">
                   Cart Items ({cartItems.length})
                 </h2>
               </div>
               
               {cartItems.map((item) => (
-                <div key={item.id} className="border-b border-gray-200 last:border-b-0 p-6 hover:bg-gray-50 transition-colors">
+                <div key={item.id} className="border-b border-gray-100 last:border-b-0 p-6 hover:bg-white/60 transition-colors">
                   <div className="flex items-start space-x-4">
                     {/* Product Image */}
                     <div className="relative">
                       {item.product.image ? (
-                        <img
+                        <Image
                           src={item.product.image}
                           alt={item.product.name}
-                          className="w-24 h-24 object-cover rounded-lg shadow-sm"
+                          width={96}
+                          height={96}
+                          className="w-24 h-24 object-cover rounded-xl shadow-md"
                         />
                       ) : (
-                        <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
                           <span className="text-gray-400 text-xs">No Image</span>
                         </div>
                       )}
                       <button
                         onClick={() => addToWishlist(item.product.id)}
-                        className="absolute -top-2 -right-2 p-1 bg-white rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"
+                        className="absolute -top-2 -right-2 p-2 bg-white rounded-full shadow-lg hover:bg-red-50 hover:text-red-500 transition-colors"
                       >
                         <Heart className="h-4 w-4" />
                       </button>
@@ -215,7 +239,7 @@ const CartPage: React.FC = () => {
                     
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
+                      <h3 className="font-bold text-gray-900 mb-1 line-clamp-2 text-lg">
                         {item.product.name}
                       </h3>
                       <p className="text-gray-600 text-sm mb-2">{item.product.category}</p>
@@ -228,11 +252,15 @@ const CartPage: React.FC = () => {
                           ))}
                         </div>
                         <span className="text-sm text-gray-600 ml-1">4.2</span>
+                        <span className="mx-2 text-gray-400">•</span>
+                        <span className="text-xs text-green-600 inline-flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" /> In stock
+                        </span>
                       </div>
                       
                       {/* Price */}
                       <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-blue-600">
+                        <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                           ${item.product.price}
                         </span>
                         <span className="text-sm text-gray-500">
@@ -243,15 +271,14 @@ const CartPage: React.FC = () => {
 
                     {/* Quantity Controls */}
                     <div className="flex flex-col items-center space-y-3">
-                      <div className="flex items-center border border-gray-300 rounded-lg">
-                        <button
+                      <div className="flex items-center border-2 border-gray-200 rounded-xl bg-white shadow-sm">
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           disabled={updating === item.id || item.quantity <= 1}
                           className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           <Minus className="h-4 w-4" />
                         </button>
-                        <span className="px-4 py-2 min-w-[3rem] text-center font-medium">
+                        <span className="px-5 py-2 min-w-[3rem] text-center font-bold bg-blue-50 text-blue-700 rounded-md">
                           {updating === item.id ? '...' : item.quantity}
                         </span>
                         <button
@@ -292,8 +319,8 @@ const CartPage: React.FC = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 sticky top-6 border border-white/20">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
               
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between">
@@ -309,8 +336,8 @@ const CartPage: React.FC = () => {
                 </div>
                 
                 {calculateSubtotal() < 50 && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2 text-blue-700 text-sm">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-xl p-3">
+                    <div className="flex items-center gap-2 text-blue-700 text-sm font-medium">
                       <Truck className="h-4 w-4" />
                       <span>Add ${(50 - calculateSubtotal()).toFixed(2)} more for free shipping!</span>
                     </div>
@@ -343,7 +370,7 @@ const CartPage: React.FC = () => {
 
               <button
                 onClick={proceedToCheckout}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 font-bold transition-all duration-300 shadow-xl hover:shadow-2xl"
               >
                 Proceed to Checkout
               </button>
@@ -365,7 +392,7 @@ const CartPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

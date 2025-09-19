@@ -10,9 +10,16 @@ const prisma = new PrismaClient();
 // Register
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
-  body('firstName').trim().notEmpty(),
-  body('lastName').trim().notEmpty()
+  body('password')
+    .isLength({ min: 8 })
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+  body('firstName').trim().notEmpty().isLength({ min: 2, max: 50 }),
+  body('lastName').trim().notEmpty().isLength({ min: 2, max: 50 }),
+  body('phone').optional().isMobilePhone('any'),
+  body('dateOfBirth').optional().isISO8601().toDate(),
+  body('gender').optional().isIn(['MALE', 'FEMALE', 'NON_BINARY', 'PREFER_NOT_TO_SAY']),
+  body('marketingEmails').optional().isBoolean()
 ], async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -20,7 +27,16 @@ router.post('/register', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password, firstName, lastName } = req.body;
+    const { 
+      email, 
+      password, 
+      firstName, 
+      lastName, 
+      phone, 
+      dateOfBirth, 
+      gender, 
+      marketingEmails 
+    } = req.body;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -34,20 +50,39 @@ router.post('/register', [
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Validate age if dateOfBirth is provided
+    if (dateOfBirth) {
+      const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
+      if (age < 18) {
+        return res.status(400).json({ 
+          message: 'You must be at least 18 years old to register' 
+        });
+      }
+    }
+
     // Create user
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         firstName,
-        lastName
+        lastName,
+        phone: phone || null,
+        dateOfBirth: dateOfBirth || null,
+        gender: gender || null,
+        marketingEmails: marketingEmails || false
       },
       select: {
         id: true,
         email: true,
         firstName: true,
         lastName: true,
-        role: true
+        phone: true,
+        dateOfBirth: true,
+        gender: true,
+        marketingEmails: true,
+        role: true,
+        createdAt: true
       }
     });
 
@@ -59,9 +94,10 @@ router.post('/register', [
     );
 
     res.status(201).json({
-      message: 'User created successfully',
+      message: 'Welcome! Your account has been created successfully',
       user,
-      token
+      token,
+      expiresIn: '7d'
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -91,15 +127,29 @@ router.post('/login', [
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    if (!user.isActive) {
+      return res.status(401).json({ message: 'Account has been deactivated. Please contact support.' });
+    }
+
     // Check password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Update last login
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
     // Generate JWT
     const token = jwt.sign(
-      { userId: user.id },
+      { 
+        userId: user.id, 
+        email: user.email, 
+        role: user.role 
+      },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
@@ -111,9 +161,16 @@ router.post('/login', [
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        role: user.role
+        phone: user.phone,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
+        marketingEmails: user.marketingEmails,
+        role: user.role,
+        lastLoginAt: new Date(),
+        createdAt: user.createdAt
       },
-      token
+      token,
+      expiresIn: '7d'
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -139,7 +196,14 @@ router.get('/me', async (req, res) => {
         email: true,
         firstName: true,
         lastName: true,
-        role: true
+        phone: true,
+        dateOfBirth: true,
+        gender: true,
+        marketingEmails: true,
+        role: true,
+        isActive: true,
+        lastLoginAt: true,
+        createdAt: true
       }
     });
 
